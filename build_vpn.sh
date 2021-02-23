@@ -1,6 +1,6 @@
 #!/bin/bash
 # Build the VPN Script
-# Author Shiczh
+# Author leazh
 
 VERSION=1.0
 PREFIX=/data/vpn
