@@ -145,8 +145,8 @@ EOF
     docker-compose up -d "$VPN_TYPE"
     blue_echo "提取相关信息中，请稍等……"
     sleep 10
-    docker logs "$VPN_TYPE" > $tmp_file > /dev/null
-    server_info=$(grep -E "^Server IP|^IPsec PSK|^Username|^Password" $tmp_file)
+    docker logs "$VPN_TYPE" > "$tmp_file"
+    server_info=$(grep -E "^Server IP|^IPsec PSK|^Username|^Password" "$tmp_file")
     blue_echo "ipsec_vpn 信息如下，请注意保存及防止泄露，也可以通过 docker logs ipsec_vpn 查看详细信息。"
     echo "$server_info"
 
