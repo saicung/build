@@ -1,6 +1,9 @@
 # 如何快速搭建 VPN 服务 ?
 
-在开始之前，请确保部署的服务器上已存在 docker-compose，可参考 [Install Docker Compose](https://docs.docker.com/compose/install/)
+> 该脚本目前仅支持 Centos 操作系统，否则的无法使用 `yum` 等命令。如果有疑问可以提交 Issues。
+
+在开始之前，请确保部署的服务器上已存在 docker-compose命令，在运行时也会对该命令的检查并给予安装部署。
+可参考 [Install Docker Compose](https://docs.docker.com/compose/install/)
 
 该脚本支持 ipsec_vpn 和 shadowsocks，可以看到该脚本的用法：
 
@@ -21,7 +24,7 @@
 
 ## 搭建 ipsec_vpn 服务
 
-> 建议按默认部署
+> 首次建议按默认部署
 
 构建 ipsec_vpn，可以使用以下命令：
 
@@ -41,7 +44,7 @@
 
 ## 搭建 shadowsocks vpn 服务
 
-> 建议按默认部署
+> 首次建议按默认部署
 
 构建 shadowsocks，可以使用以下命令：
 
@@ -58,8 +61,7 @@
 ```
 
 除此之外，你还需要保证该端口是已放通可访问的。
-[shadowsocks 客户端下载 ](https://github.com/shadowsocks)
 
-
+- [shadowsocks 客户端下载 ](https://github.com/shadowsocks)
 - [ipsec_vpn 如何新增帐户?](./add_user.md)
 - [配置客户端](./setting_client.md)
