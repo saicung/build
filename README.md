@@ -1,6 +1,6 @@
 # 如何快速搭建 VPN 服务 ?
 
-> 该脚本目前仅支持 Centos 操作系统，否则的无法使用 `yum` 等命令。如果有疑问可以提交 Issues。
+> 该脚本目前仅支持 Centos 操作系统，否则的无法使用 `yum` 等命令。如有疑问可以提交 Issues。
 
 在开始之前，请确保部署的服务器上已存在 docker-compose命令，在运行时也会对该命令的检查并给予安装部署。
 可参考 [Install Docker Compose](https://docs.docker.com/compose/install/)
