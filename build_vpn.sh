@@ -92,47 +92,6 @@ while (( $# > 0 )); do
     shift
 done
 
-if [ `whoami` != "root" ]
-then
-    red_echo "You must run by root"
-    exit 1
-fi
-
-if [[ -z "$VPN_TYPE" ]]; then
-    red_echo "VPN 类型不能为空"
-    usage
-    exit 1
-fi
-
-if ! which docker-compose
-then 
-    curl -L "https://github.com/docker/compose/releases/download/1.28.4/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
-    chmod +x /usr/local/bin/docker-compose
-    ln -s /usr/local/bin/docker-compose /usr/bin/docker-compose
-    version=$(docker-compose --version)
-    blue_echo "$version"
-fi
-
-if ! yum list installed  | grep docker > /dev/null
-then 
-    if ! yum install -y docker-ce;
-    then
-        red_echo "yum cannot install docker command"
-        exit 1
-    fi
-fi
-
-if ! [[ -d "$PREFIX" ]]; then
-    red_echo "$PREFIX directory  is not exists"
-    read -rp "are you sure to create it (y/n)? " r
-    if [ "$r" == "y" ]; then
-        install -m 755 -d "$PREFIX"
-    else
-        red_echo "Abort, Please create the directory($PREFIX) before deploymenet"
-        exit 1
-    fi
-fi
-
 deploymenet_vpn () {
 
     local vpn_admin_pw vpn_ipsec_psk tmp_file
@@ -247,7 +206,46 @@ EOF
 #    docker run -d -p "$SHADS_SERVER_PORT":"$SHADS_SERVER_PORT" -p "$SHADS_SERVER_PORT":"$SHADS_SERVER_PORT"/udp --name shadowsocks --restart=always -v "$PREFIX"/"$VPN_TYPE"/shadowsocks:/etc/shadowsocks-libev teddysun/shadowsocks-libev
 }
 
+if [ `whoami` != "root" ]
+then
+    red_echo "You must run by root"
+    exit 1
+fi
 
+if [[ -z "$VPN_TYPE" ]]; then
+    red_echo "VPN 类型不能为空"
+    usage
+    exit 1
+fi
+
+if ! which docker-compose
+then 
+    curl -L "https://github.com/docker/compose/releases/download/1.28.4/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
+    chmod +x /usr/local/bin/docker-compose
+    ln -s /usr/local/bin/docker-compose /usr/bin/docker-compose
+    version=$(docker-compose --version)
+    blue_echo "$version"
+fi
+
+if ! yum list installed  | grep docker > /dev/null
+then 
+    if ! yum install -y docker-ce;
+    then
+        red_echo "yum cannot install docker command"
+        exit 1
+    fi
+fi
+
+if ! [[ -d "$PREFIX" ]]; then
+    red_echo "$PREFIX directory  is not exists"
+    read -rp "are you sure to create it (y/n)? " r
+    if [ "$r" == "y" ]; then
+        install -m 755 -d "$PREFIX"
+    else
+        red_echo "Abort, Please create the directory($PREFIX) before deploymenet"
+        exit 1
+    fi
+fi
 
 if [[ "$VPN_TYPE" == "ipsec_vpn" ]]; then
     deploymenet_vpn
