@@ -123,9 +123,8 @@ then
 fi
 
 if ! [[ -d "$PREFIX" ]]; then
-    red_echo "$PREFIX 目录不存在"
-    
-    read -rp "\"$PREFIX\" directory  is not exists, are you sure to create it (y/n)? " r
+    red_echo "$PREFIX directory  is not exists"
+    read -rp "are you sure to create it (y/n)? " r
     if [ "$r" == "y" ]; then
         install -m 755 -d "$PREFIX"
     else
@@ -136,10 +135,11 @@ fi
 
 deploymenet_vpn () {
 
-    local vpn_admin_pw vpn_ipsec_psk
-
+    local vpn_admin_pw vpn_ipsec_psk tmp_file
+     
     vpn_ipsec_psk="$(rndpw 20)"
     vpn_admin_pw="$(rndpw 16)"
+    tmp_file=$(mktemp "/tmp/ipsec_vpn_XXXXX.env")
 
     install -m 755 -d "$PREFIX"/"$VPN_TYPE"/config
     install -m 755 -d "$PREFIX"/"$VPN_TYPE"/data
@@ -179,15 +179,27 @@ services:
     env_file:
       - $PREFIX/$VPN_TYPE/config/vpn.env
     restart: always
+    privileged: true
 
 EOF
     
     docker-compose up -d "$VPN_TYPE"
+    blue_echo "提取相关信息中，请稍等……"
+    sleep 10
+    docker logs "$VPN_TYPE" > $tmp_file > /dev/null
+    server_info=$(grep -E "^Server IP|^IPsec PSK|^Username|^Password" $tmp_file)
+    blue_echo "ipsec_vpn 信息如下，请注意保存及防止泄露，也可以通过 docker logs ipsec_vpn 查看详细信息。"
+    echo "$server_info"
+
 #    docker run --name vpn_server --env-file "$PREFIX"/"$VPN_TYPE"/config/vpn.env --restart=always -v "$PREFIX"/"$VPN_TYPE"/data:/etc/ipsec.d -p $IPSEC_PORT1:$IPSEC_PORT1/udp -p $IPSEC_PORT2:$IPSEC_PORT2/udp -d --privileged hwdsl2/ipsec-vpn-server
 }
 
 
 deploymenet_shadowsocks_vpn () {
+
+    local shds_ip shds_password
+    shds_ip=$(curl ip.sb)
+    shds_password=$(rndpw 16)
     
     install -m 755 -d "$PREFIX"/"$VPN_TYPE"
     
@@ -199,7 +211,7 @@ deploymenet_shadowsocks_vpn () {
 {
     "server":"0.0.0.0",
     "server_port":$SHADS_SERVER_PORT,
-    "password":"$(rndpw 16)",
+    "password":"$shds_password",
     "timeout":300,
     "method":"aes-256-gcm",
     "fast_open":false,
@@ -220,12 +232,18 @@ services:
     volumes:
       - $PREFIX/$VPN_TYPE:/etc/shadowsocks-libev
     restart: always
-    privileged: true
 
 EOF
     
     docker-compose up -d "$VPN_TYPE"
-
+    blue_echo "提取相关信息中，请稍等……"
+    blue_echo "shadowsocks 信息如下，请注意保存及防止泄露，也可以通过查看 shadowsocks 的配置文件 config.json。"
+    cat << EOF
+    Server   IP：        $shds_ip
+    Server Port：        $SHADS_SERVER_PORT
+    Server Password:     $shds_password
+    Server Method:       aes-256-gcm
+EOF
 #    docker run -d -p "$SHADS_SERVER_PORT":"$SHADS_SERVER_PORT" -p "$SHADS_SERVER_PORT":"$SHADS_SERVER_PORT"/udp --name shadowsocks --restart=always -v "$PREFIX"/"$VPN_TYPE"/shadowsocks:/etc/shadowsocks-libev teddysun/shadowsocks-libev
 }
 
