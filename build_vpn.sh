@@ -92,10 +92,25 @@ while (( $# > 0 )); do
     shift
 done
 
+if [ `whoami` != "root" ]
+then
+    red_echo "You must run by root"
+    exit 1
+fi
+
 if [[ -z "$VPN_TYPE" ]]; then
     red_echo "VPN 类型不能为空"
     usage
     exit 1
+fi
+
+if ! which docker-compose
+then 
+    curl -L "https://github.com/docker/compose/releases/download/1.28.4/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-composei
+    chmod +x /usr/local/bin/docker-compose
+    ln -s /usr/local/bin/docker-compose /usr/bin/docker-compose
+    version=$(docker-compose --version)
+    blue_echo "$version"
 fi
 
 if ! yum list installed  | grep docker > /dev/null
@@ -213,6 +228,8 @@ EOF
 
 #    docker run -d -p "$SHADS_SERVER_PORT":"$SHADS_SERVER_PORT" -p "$SHADS_SERVER_PORT":"$SHADS_SERVER_PORT"/udp --name shadowsocks --restart=always -v "$PREFIX"/"$VPN_TYPE"/shadowsocks:/etc/shadowsocks-libev teddysun/shadowsocks-libev
 }
+
+
 
 if [[ "$VPN_TYPE" == "ipsec_vpn" ]]; then
     deploymenet_vpn
