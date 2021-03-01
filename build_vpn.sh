@@ -206,7 +206,7 @@ EOF
 #    docker run -d -p "$SHADS_SERVER_PORT":"$SHADS_SERVER_PORT" -p "$SHADS_SERVER_PORT":"$SHADS_SERVER_PORT"/udp --name shadowsocks --restart=always -v "$PREFIX"/"$VPN_TYPE"/shadowsocks:/etc/shadowsocks-libev teddysun/shadowsocks-libev
 }
 
-if [ `whoami` != "root" ]
+if [ "$(whoami)" != "root" ]
 then
     red_echo "You must run by root"
     exit 1
