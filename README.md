@@ -9,6 +9,7 @@
 
 ```bash
 wget -O build.sh https://raw.githubusercontent.com/ascmcs/build/main/build.sh
+chmod +x build.sh
 ```
 
 该脚本支持 ipsec 和 shadowsocks，可以看到该脚本的用法：
