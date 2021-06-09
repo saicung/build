@@ -5,6 +5,12 @@
 在开始之前，请确保部署的服务器上已存在 docker-compose 命令，在运行时也会对该命令的检查并给予安装部署。
 可参考 [Install Docker Compose](https://docs.docker.com/compose/install/)
 
+## 下载部署脚本
+
+```bash
+wget -O build.sh https://raw.githubusercontent.com/ascmcs/build/main/build.sh
+```
+
 该脚本支持 ipsec 和 shadowsocks，可以看到该脚本的用法：
 
 ```bash
