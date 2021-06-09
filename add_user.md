@@ -17,20 +17,17 @@ VPN_ADDL_PASSWORDS=123456 123456
 ```bash
 cd /data/ladder/ipsec
 docker-compose down
-docker-compose up -d ipsec_vpn
+docker-compose up -d ipsec
 ```
 
 查看帐户信息：
 
 ```bash
-docker-compose logs ipsec_vpn
+docker-compose logs ipsec
 
 # 关键字样
 Server IP: 
 IPsec PSK: 
 Username: admin
 Password: 
-Additional VPN users (username | password):
-ascmcs | 123456
-ascmcs1 | 123456
 ```

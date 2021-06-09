@@ -2,18 +2,18 @@
 
 > 该脚本目前仅支持 CentOS 操作系统，否则的无法使用 `yum` 等命令。如有疑问可以提交 Issues。
 
-在开始之前，请确保部署的服务器上已存在 docker-compose命令，在运行时也会对该命令的检查并给予安装部署。
+在开始之前，请确保部署的服务器上已存在 docker-compose 命令，在运行时也会对该命令的检查并给予安装部署。
 可参考 [Install Docker Compose](https://docs.docker.com/compose/install/)
 
-该脚本支持 ipsec_vpn 和 shadowsocks，可以看到该脚本的用法：
+该脚本支持 ipsec 和 shadowsocks，可以看到该脚本的用法：
 
 ```bash
-[root@leaZh data]# ./build_vpn.sh 
+[root@leaZh data]# ./build.sh 
 
 用法: 
     $PROGRAM [ -h --help -?  查看帮助 ]
             [ -d, --data_dir     [可选] 挂载目录, 默认为 /data/ladder]
-            [ -t --type          [必填] 选择部署 vpn 的类型  ipsec and shadowsocks ]
+            [ -t --type          [必填] 选择部署 ladder 的类型  ipsec and shadowsocks ]
             [ -p, --port         [可选] shadowsocks 服务端口, 默认为 20105 ]
             [ -i                 [可选] ipsec 服务端口1, 默认为 500 ]
             [ -I                 [可选] ipsec 服务端口2, 默认为 4500 ]
@@ -37,7 +37,7 @@
 
 ```bash
 # 请根据实际情况替换 <> 的内容
-./build.sh -d </data/vpn_server> -t ipsec -i <501> -I <4501> -u <ascmcs> -P <123456>
+./build.sh -d </data/server> -t ipsec -i <501> -I <4501> -u <ascmcs> -P <123456>
 ```
 
 - 除此之外，你还需要保证该端口是已放通可访问的。
