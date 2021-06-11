@@ -69,6 +69,6 @@ chmod +x build.sh
 
 除此之外，你还需要保证该端口是已放通可访问的。
 
-- [shadowsocks 客户端下载 ](https://github.com/shadowsocks)
+- [shadowsocks 客户端下载](https://github.com/shadowsocks)
 - [ipsec 如何新增帐户?](./add_user.md)
 - [配置客户端](./setting_client.md)

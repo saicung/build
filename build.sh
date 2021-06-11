@@ -1,8 +1,7 @@
 #!/bin/bash
 # Build the Ladder Script
-# Author ascmcs
 
-VERSION=1.0
+VERSION=1.0.1
 PREFIX=/data/ladder
 SHADS_SERVER_PORT=20105
 IPSEC_PORT1=500
@@ -36,102 +35,21 @@ usage_and_exit () {
     exit "$1"
 }
 
+version () {
+    echo "$VERSION"
+}
+
 rndpw () {
     </dev/urandom tr -dc _A-Za-z0-9"$2" | head -c"${1:-12}"
 }
 
-version () {
-    echo "$PROGRAM version $VERSION"
-}
-
-(( $# == 0 )) && usage_and_exit 1
-while (( $# > 0 )); do
-    case "$1" in
-        -d | --data_dir )
-            shift
-            PREFIX=$1
-            ;;
-        -p | --port )
-            shift
-            SHADS_SERVER_PORT=$1
-            ;;
-        -i)
-            shift
-            IPSEC_PORT1=$1
-            ;;
-        -I)
-            shift
-            IPSEC_PORT2=$1
-            ;;
-        -u | --user )
-            shift
-            USER_NAME=$1
-            ;;
-        -P | --password)
-            shift
-            USER_PASSWORD=$1
-            ;;
-        -t | --type )
-             shift
-             TYPE=$1
-             ;;
-        --help | -h | '-?' )
-            usage_and_exit 0
-            ;;
-        --version | -v | -V )
-            version
-            exit 0
-            ;;
-        -*)
-            error "不可识别的参数: $1"
-            ;;
-        *)
-            break
-            ;;
-    esac
-    shift
-done
-
-if [ "$(whoami)" != "root" ]
-then
-    red_echo "You must run by root"
-    exit 1
-fi
-
-if [[ -z "$TYPE" ]]; then
-    red_echo "类型不能为空"
-    usage
-    exit 1
-fi
-
-if ! which docker-compose
-then
+config_docker_compose () {
     sudo curl -L "https://github.com/docker/compose/releases/download/1.29.2/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
     chmod +x /usr/local/bin/docker-compose
     ln -s /usr/local/bin/docker-compose /usr/bin/docker-compose
     version=$(docker-compose --version)
     blue_echo "$version"
-fi
-
-if ! yum list installed  | grep docker > /dev/null
-then
-    if ! yum install -y docker-ce;
-    then
-        red_echo "yum cannot install docker command, please check it"
-        exit 1
-    fi
-fi
-
-if ! [[ -d "$PREFIX" ]]; then
-    red_echo "$PREFIX directory  is not exists"
-    read -rp "are you sure to create it (y/n)? " r
-    if [ "$r" == "y" ]; then
-        install -m 755 -d "$PREFIX"
-    else
-        red_echo "Abort, Please create the directory($PREFIX) before deploymenet"
-        exit 1
-    fi
-fi
+}
 
 deploymenet_ipsec () {
 
@@ -247,6 +165,91 @@ EOF
 EOF
 #    docker run -d -p "$SHADS_SERVER_PORT":"$SHADS_SERVER_PORT" -p "$SHADS_SERVER_PORT":"$SHADS_SERVER_PORT"/udp --name shadowsocks --restart=always -v "$PREFIX"/"$TYPE"/shadowsocks:/etc/shadowsocks-libev teddysun/shadowsocks-libev
 }
+
+(( $# == 0 )) && usage_and_exit 1
+while (( $# > 0 )); do
+    case "$1" in
+        -d | --data_dir)
+            shift
+            PREFIX=$1
+            ;;
+        -p | --port)
+            shift
+            SHADS_SERVER_PORT=$1
+            ;;
+        -i)
+            shift
+            IPSEC_PORT1=$1
+            ;;
+        -I)
+            shift
+            IPSEC_PORT2=$1
+            ;;
+        -u | --user)
+            shift
+            USER_NAME=$1
+            ;;
+        -P | --password)
+            shift
+            USER_PASSWORD=$1
+            ;;
+        -t | --type)
+             shift
+             TYPE=$1
+             ;;
+        --help | -h | '-?')
+            usage_and_exit 0
+            ;;
+        --version | -v | -V)
+            version
+            exit 0
+            ;;
+        -*)
+            error "不可识别的参数: $1"
+            ;;
+        *)
+            break
+            ;;
+    esac
+    shift
+done
+
+if [ "$(whoami)" != "root" ]
+then
+    red_echo "You must run by root"
+    exit 1
+fi
+
+if [[ -z "$TYPE" ]]; then
+    red_echo "类型不能为空"
+    usage
+    exit 1
+fi
+
+if ! which docker-compose
+then
+    config_docker_compose
+fi
+
+if ! yum list installed  | grep docker > /dev/null
+then
+    if ! yum install -y docker-ce;
+    then
+        red_echo "yum cannot install docker command, please check it"
+        exit 1
+    fi
+fi
+
+if ! [[ -d "$PREFIX" ]]; then
+    red_echo "$PREFIX directory  is not exists"
+    read -rp "are you sure to create it (y/n)? " r
+    if [ "$r" == "y" ]; then
+        install -m 755 -d "$PREFIX"
+    else
+        red_echo "Abort, Please create the directory($PREFIX) before deploymenet"
+        exit 1
+    fi
+fi
 
 if [[ "$TYPE" == "ipsec" ]]; then
     deploymenet_ipsec
