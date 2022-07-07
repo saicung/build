@@ -8,7 +8,7 @@
 ## 下载部署脚本
 
 ```bash
-wget -O build.sh https://raw.githubusercontent.com/ascmcs/build/main/build.sh
+wget -O build.sh https://raw.githubusercontent.com/synonez/build/main/build.sh
 chmod +x build.sh
 ```
 
